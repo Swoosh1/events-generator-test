@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="events-generator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/events_generator_jar</output-path>
+    <root id="archive" name="events-generator.jar">
+      <element id="module-output" name="events-generator" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="library" level="project" name="Maven: com.sun.mail:javax.mail:1.6.0" />
+      <element id="library" level="project" name="Maven: javax.activation:activation:1.1" />
+      <element id="library" level="project" name="Maven: javax.json:javax.json-api:1.0" />
+      <element id="library" level="project" name="Maven: javax:javaee-api:8.0" />
+      <element id="library" level="project" name="Maven: joda-time:joda-time:2.9.9" />
+      <element id="library" level="project" name="Maven: org.glassfish:javax.json:1.1.2" />
+    </root>
+  </artifact>
+</component>
