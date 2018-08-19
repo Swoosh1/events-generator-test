@@ -1,30 +1,80 @@
 package com.testers.soroosh;
 
 import com.testers.soroosh.BsUtil;
-import com.testers.soroosh.GeneratorConfigs;
+import org.apache.commons.cli.*;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.util.UUID.randomUUID;
 
 public class Generator {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         System.out.println("Starting");
 
+        Options options = new Options();
+
+        options.addOption("number_of_events", true, "number of events to create");
+        options.addOption("batch_size", true, "number of events per file");
+        options.addOption("interval", true, "seconds between files");
+        options.addOption("output_directory", true, "directory to write files to");
+
+        CommandLineParser parser = new DefaultParser();
+
+        //parse the options passed as command line arguments
+        CommandLine cmd = parser.parse( options, args);
+
+
         BsUtil bsUtil = new BsUtil();
-        GeneratorConfigs configs = bsUtil.parseArgumentsIntoConfigs(args);
+        List<String> missingArguments = new ArrayList<String>();
 
-        StringBuilder sbIllegalOrMissingArguments = new StringBuilder();
-        if(configs.getNumberOfOrders() == 0) sbIllegalOrMissingArguments.append(" --number-of-orders");
-        if(configs.getBatchSize() == 0) sbIllegalOrMissingArguments.append(" --batch-size");
-        if(configs.getInterval() == 0) sbIllegalOrMissingArguments.append(" --interval");
-        if(configs.getOutput() == null || configs.getOutput() == "") sbIllegalOrMissingArguments.append(" --output-directory");
+        int numberOfEvents = 0;
+        if(!cmd.hasOption("number_of_events")) {
+            missingArguments.add("number_of_events");
+        }else{
+            String strNumberOfEvents = cmd.getOptionValue("number_of_events");
+            if (!bsUtil.tryParseInt(strNumberOfEvents)) throw new IllegalArgumentException("number_of_events is not a valid integer");
+            numberOfEvents = Integer.parseInt(strNumberOfEvents);
+        }
 
-        if(sbIllegalOrMissingArguments.length() > 0){
-            throw new IllegalArgumentException("please provide valid arguments:" + sbIllegalOrMissingArguments.toString());
+        int batchSize = 0;
+        if(!cmd.hasOption("batch_size")) {
+            missingArguments.add("batch_size");
+        }else{
+            String strBatchSize = cmd.getOptionValue("batch_size");
+            if (!bsUtil.tryParseInt(strBatchSize)) throw new IllegalArgumentException("batch_size is not a valid integer");
+            batchSize = Integer.parseInt(strBatchSize);
+        }
+
+        int interval=0;
+        if(!cmd.hasOption("interval")) {
+            missingArguments.add("interval");
+        }else{
+            String strInterval = cmd.getOptionValue("interval");
+            if (!bsUtil.tryParseInt(strInterval)) throw new IllegalArgumentException("interval is not a valid integer");
+            interval = Integer.parseInt(strInterval);
+        }
+
+        String outputDir = "";
+        if(!cmd.hasOption("output_directory")) {
+            missingArguments.add("output_directory");
+        }else{
+            outputDir = cmd.getOptionValue("output_directory");
+            if (!bsUtil.isValidDirectory(outputDir)) throw new IllegalArgumentException("output_directory is not a valid path");
+        }
+
+        if(missingArguments.size() > 0){
+
+            String strMissingArgs = "";
+            for(int i =0;i< missingArguments.size();i++){
+                strMissingArgs+=" "+missingArguments.get(i);
+            }
+            throw new IllegalArgumentException("missing arguments:" + strMissingArgs);
         }
 
         Integer orderNum = 0;
@@ -32,8 +82,8 @@ public class Generator {
         StringBuilder sb = new StringBuilder();
         Boolean isOrder = true;
         String orderId = "";
-        DateTime lastFileWrite = new DateTime(DateTimeZone.UTC).minusSeconds(configs.getInterval());
-        for (int i = 0;i < configs.getNumberOfOrders();i++){
+        DateTime lastFileWrite = new DateTime(DateTimeZone.UTC).minusSeconds(interval);
+        for (int i = 0;i < numberOfEvents;i++){
             String type = "OrderPlaced";
 
             if(!isOrder){
@@ -59,13 +109,13 @@ public class Generator {
             sb.append(evnt);
             currentBatchNumber++;
 
-            if(currentBatchNumber >= configs.getBatchSize()){
-                while(new DateTime(DateTimeZone.UTC).isBefore(lastFileWrite.plusSeconds(configs.getInterval()))){
+            if(currentBatchNumber >= batchSize){
+                while(new DateTime(DateTimeZone.UTC).isBefore(lastFileWrite.plusSeconds(interval))){
                     //wait
                 }
 
                 lastFileWrite = new DateTime(DateTimeZone.UTC);
-                bsUtil.writeStringToFile(sb.toString(), configs.getOutput(), lastFileWrite);
+                bsUtil.writeStringToFile(sb.toString(), outputDir, lastFileWrite);
 
                 currentBatchNumber = 0;
                 sb = new StringBuilder();
@@ -74,15 +124,16 @@ public class Generator {
         }
 
         if(currentBatchNumber > 0){
-            while(new DateTime(DateTimeZone.UTC).isBefore(lastFileWrite.plusSeconds(configs.getInterval()))){
+            while(new DateTime(DateTimeZone.UTC).isBefore(lastFileWrite.plusSeconds(interval))){
                 //wait
             }
 
             lastFileWrite = new DateTime(DateTimeZone.UTC);
-            bsUtil.writeStringToFile(sb.toString(), configs.getOutput(), lastFileWrite);
+            bsUtil.writeStringToFile(sb.toString(), outputDir, lastFileWrite);
         }
 
         System.out.println("Finished");
+
     }
 
 

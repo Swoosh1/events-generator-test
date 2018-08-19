@@ -1,6 +1,5 @@
 package com.testers.soroosh;
 
-import com.testers.soroosh.GeneratorConfigs;
 import org.joda.time.DateTime;
 
 import java.io.File;
@@ -8,37 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class BsUtil {
-
-    public GeneratorConfigs parseArgumentsIntoConfigs(String[] args){
-
-        GeneratorConfigs res = new GeneratorConfigs();
-
-        for(int i = 0;i < args.length;i++){
-
-            try{
-                String[] arg = args[i].split("=");
-                if(arg.length > 1){
-                    if(arg[0].substring(2, arg[0].length()).equals("number-of-orders")){
-                        res.setNumberOfOrders(Integer.parseInt(arg[1]));
-                    }
-                    else if(arg[0].substring(2, arg[0].length()).equals("batch-size")){
-                        res.setBatchSize(Integer.parseInt(arg[1]));
-                    }
-                    else if(arg[0].substring(2, arg[0].length()).equals("interval")){
-                        res.setInterval(Integer.parseInt(arg[1]));
-                    }
-                    else if(arg[0].substring(2, arg[0].length()).equals("output-directory")){
-                        res.setOutput(arg[1]);
-                    }
-                }
-
-            }catch (Exception ex){
-
-            }
-        }
-
-        return res;
-    }
 
     public void writeStringToFile(String body, String output, DateTime dt) {
         try{
@@ -70,5 +38,18 @@ public class BsUtil {
         }
 
         return "OrderAccepted";
+    }
+
+    public boolean tryParseInt(String value) {
+        try {
+            Integer.parseInt(value);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public boolean isValidDirectory(String path){
+        return new File(path).exists();
     }
 }
