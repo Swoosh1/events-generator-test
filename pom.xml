@@ -22,7 +22,7 @@
             <configuration>
                 <archive>
                     <manifest>
-                        <mainClass>com.justeattest.events.Generator</mainClass>
+                        <mainClass>com.testers.soroosh.Generator</mainClass>
                     </manifest>
                 </archive>
                 <descriptorRefs>
@@ -38,7 +38,7 @@
                 <archive>
                     <manifest>
                         <addClasspath>true</addClasspath>
-                        <mainClass>com.justeattest.events.Generator</mainClass>
+                        <mainClass>com.testers.soroosh.Generator</mainClass>
                     </manifest>
                 </archive>
             </configuration>

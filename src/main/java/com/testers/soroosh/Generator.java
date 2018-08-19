@@ -1,7 +1,7 @@
-package com.justeattest.events;
+package com.testers.soroosh;
 
-import com.justeattest.buslayer.BsUtil;
-import com.justeattest.common.GeneratorConfigs;
+import com.testers.soroosh.BsUtil;
+import com.testers.soroosh.GeneratorConfigs;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

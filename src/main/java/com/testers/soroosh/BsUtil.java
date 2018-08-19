@@ -1,6 +1,6 @@
-package com.justeattest.buslayer;
+package com.testers.soroosh;
 
-import com.justeattest.common.GeneratorConfigs;
+import com.testers.soroosh.GeneratorConfigs;
 import org.joda.time.DateTime;
 
 import java.io.File;

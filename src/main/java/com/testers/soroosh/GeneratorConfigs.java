@@ -1,4 +1,4 @@
-package com.justeattest.common;
+package com.testers.soroosh;
 
 public class GeneratorConfigs {
     private Integer numberOfOrders = 0;
